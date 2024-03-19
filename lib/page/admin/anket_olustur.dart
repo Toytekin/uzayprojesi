@@ -4,13 +4,17 @@ import 'package:uuid/uuid.dart';
 import 'package:uzayprojesi/page/admin/a_home.dart';
 import 'package:uzayprojesi/services/user_aouth.dart';
 import 'package:uzayprojesi/util/model/anket_model.dart';
+import 'package:uzayprojesi/util/model/user_model.dart';
 import 'package:uzayprojesi/util/widget/sbt_textfid.dart';
 
 class AnketOlustur extends StatefulWidget {
+  final UserModel userModel;
+
   final AnketModel? anketModel;
   const AnketOlustur({
     super.key,
     this.anketModel,
+    required this.userModel,
   });
 
   @override
@@ -86,7 +90,9 @@ class _AnketOlusturState extends State<AnketOlustur> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AdminHomeSayfasi(),
+              builder: (context) => AdminHomeSayfasi(
+                userModel: widget.userModel,
+              ),
             ),
           );
         },
@@ -112,7 +118,9 @@ class _AnketOlusturState extends State<AnketOlustur> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const AdminHomeSayfasi()),
+                  builder: (context) =>
+                      AdminHomeSayfasi(userModel: widget.userModel),
+                ),
               );
             }
           } else {

@@ -26,12 +26,17 @@ class TelDiyalog extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
         ),
-        ElevatedButton(onPressed: onayPress, child: const Text('OK')),
-        ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Cancel'))
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ElevatedButton(onPressed: onayPress, child: const Text('OK')),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'))
+          ],
+        )
       ],
     );
   }

@@ -3,6 +3,7 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:uzayprojesi/page/admin/a_home.dart';
+import 'package:uzayprojesi/page/anket_doldurma/ank_home.dart';
 import 'package:uzayprojesi/page/home/home_model.dart';
 import 'package:uzayprojesi/page/home/tel_diyalog_widget.dart';
 import 'package:uzayprojesi/page/odul/odul_animaasyon.dart';
@@ -10,6 +11,7 @@ import 'package:uzayprojesi/page/ulke_secme.dart';
 import 'package:uzayprojesi/services/user_aouth.dart';
 import 'package:uzayprojesi/util/constant/colors.dart';
 import 'package:uzayprojesi/util/constant/image_yolu.dart';
+import 'package:uzayprojesi/util/model/anket_model.dart';
 import 'package:uzayprojesi/util/model/user_model.dart';
 import 'package:uzayprojesi/util/widget/sbt_cart.dart';
 
@@ -27,6 +29,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with HomeModel {
+  List<AnketModel> anketlerim = [];
+
+  @override
+  void initState() {
+    super.initState();
+    verilerileriCek();
+  }
+
+  verilerileriCek() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -52,12 +66,19 @@ class _HomeScreenState extends State<HomeScreen> with HomeModel {
     );
   }
 
-  StreamBuilder<UserModel> stream(BuildContext context, Size size) {
-    return StreamBuilder(
+  StreamBuilder<UserModel?> stream(BuildContext context, Size size) {
+    return StreamBuilder<UserModel?>(
       stream:
           context.read<FirebaseServices>().listenToActiveUser(usermodel.userID),
       builder: (context, snapshot) {
-        if (snapshot.data != null) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Veri yüklenene kadar bekleyin
+          return const CircularProgressIndicator(); // veya başka bir yükleme göstergesi
+        } else if (snapshot.hasError) {
+          // Hata durumunda kullanıcıyı bilgilendirin
+          return Text('Bir hata oluştu: ${snapshot.error}');
+        } else {
+          // Veri yüklendiyse, UserModel nesnesini alın
           var veri = snapshot.data;
           if (veri != null) {
             return Column(
@@ -93,6 +114,19 @@ class _HomeScreenState extends State<HomeScreen> with HomeModel {
                   title: bekleyenAnket,
                   value: veri.bekleyenAnket.length.toString(),
                   anketVarmi: usermodel.bekleyenAnket.isEmpty ? false : true,
+                  onTap: usermodel.bekleyenAnket.isEmpty
+                      ? null
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AnketHome(
+                                anketModels: usermodel.bekleyenAnket,
+                                userModel: usermodel,
+                              ),
+                            ),
+                          );
+                        },
                 ),
                 SbtCard(title: puan, value: veri.puan.toString()),
               ],
@@ -100,8 +134,6 @@ class _HomeScreenState extends State<HomeScreen> with HomeModel {
           } else {
             return bosVeriGelirse(size);
           }
-        } else {
-          return bosVeriGelirse(size);
         }
       },
     );
@@ -144,7 +176,9 @@ class _HomeScreenState extends State<HomeScreen> with HomeModel {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const AdminHomeSayfasi()),
+                    builder: (context) =>
+                        AdminHomeSayfasi(userModel: widget.userModel),
+                  ),
                 );
               },
               icon: const Icon(

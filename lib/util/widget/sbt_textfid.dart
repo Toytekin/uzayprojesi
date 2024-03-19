@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SbtTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -21,6 +22,11 @@ class SbtTextField extends StatelessWidget {
         style: const TextStyle(color: Colors.white),
         keyboardType:
             klvyeTipi ? TextInputType.multiline : TextInputType.number,
+        inputFormatters: klvyeTipi
+            ? null
+            : <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly,
+              ],
         maxLines: satirSayisi,
         controller: controller,
         decoration: InputDecoration(

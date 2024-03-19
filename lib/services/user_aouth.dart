@@ -44,10 +44,15 @@ class FirebaseServices with ChangeNotifier {
   }
 
   Future<void> userKayitVeritabi(UserModel userModel) async {
-    await firestore
-        .collection('users')
-        .doc(userModel.userID)
-        .set(userModel.toMap());
+    var userDoc = firestore.collection('users').doc(userModel.userID);
+    var userDocSnapshot = await userDoc.get();
+
+    if (userDocSnapshot.exists) {
+      // Kullanıcı zaten mevcut, verileri güncelle
+    } else {
+      // Kullanıcı yok, yeni kullanıcıyı kaydet
+      await userDoc.set(userModel.toMap());
+    }
   }
 
 //  U P D A T E
@@ -165,13 +170,37 @@ class FirebaseServices with ChangeNotifier {
     }
   }
 
+  Future<List<UserModel>> getUsers() async {
+    // Firestore'dan tüm kullanıcıları getir
+    QuerySnapshot querySnapshot = await firestore.collection('users').get();
+    List<UserModel> users = querySnapshot.docs
+        .map((doc) => UserModel.fromMap(doc.data()! as Map<String, dynamic>))
+        .toList();
+    return users;
+  }
+
+  Future<void> updateUser(UserModel user) async {
+    // Kullanıcıyı Firestore'da güncelle
+    await firestore.collection('users').doc(user.userID).update(user.toMap());
+  }
+
 //!ANKET
   Future<void> saveAnket(AnketModel anket) async {
     try {
+      // Anketi Firestore'a kaydet
       await firestore
           .collection('anketler')
           .doc(anket.anketID)
           .set(anket.toMap());
+
+      // Tüm kullanıcıları getir
+      List<UserModel> users = await getUsers();
+
+      // Her bir kullanıcının bekleyenAnket listesine yeni anketi ekle
+      for (var user in users) {
+        user.bekleyenAnket.add(anket);
+        await updateUser(user);
+      }
     } catch (e) {
       debugPrint('Anket kaydedilirken bir hata oluştu: $e');
     }
