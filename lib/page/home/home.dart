@@ -121,8 +121,8 @@ class _HomeScreenState extends State<HomeScreen> with HomeModel {
                             context,
                             MaterialPageRoute(
                               builder: (context) => AnketHome(
-                                anketModels: usermodel.bekleyenAnket,
-                                userModel: usermodel,
+                                anketModels: veri.bekleyenAnket,
+                                userModel: veri,
                               ),
                             ),
                           );

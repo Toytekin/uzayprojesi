@@ -74,12 +74,15 @@ class _AdminHomeSayfasiState extends State<AdminHomeSayfasi> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(); // Veri yüklenirken gösterilecek widget
         } else if (snapshot.hasError) {
-          return Text(
-              'Hata: ${snapshot.error}'); // Hata durumunda gösterilecek widget
+          return Card(
+            child: Text('Hata: ${snapshot.error}'),
+          ); // Hata durumunda gösterilecek widget
         } else if (snapshot.data == null || snapshot.data!.isEmpty) {
           return Center(
-              child:
-                  Text(hataMesaji)); // Veri yoksa veya boşsa hata mesajı göster
+            child: Card(
+              child: Text(hataMesaji),
+            ),
+          ); // Veri yoksa veya boşsa hata mesajı göster
         } else {
           return Expanded(
             // ListView.builder'ı Expanded widget'ine sardık
